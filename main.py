@@ -87,18 +87,15 @@ class NewMessageHandler(webapp.RequestHandler):
 		outstr = template.render(temp, template_vars)
 		# Send the message to all the connected users
 		users = OnlineUser.all().fetch(100)
-		for user in users:
-			#if user.nick != nick:
+		for user in users:			
 			channel_msg = json.dumps({'success':True,"html":outstr})
-			channel.send_message(user.channel_id, channel_msg)
-		# Reply to the user request
-		self.response.out.write(outstr)
+			channel.send_message(user.channel_id, channel_msg)		
 
 class RegisterOpenSocketHandler(webapp.RequestHandler):	
 	def post(self):
 		channel_id = self.request.get('channel_id')	
 		q = OnlineUser.all().filter('channel_id =', channel_id)
-		user = q.fetchone()
+		user = q.fetch(1)[0]
 		user.opened_socket = True
 		user.put()        
 		
