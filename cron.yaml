@@ -1,0 +1,4 @@
+cron:
+- description: clear not registered users
+  url: /clear/
+  schedule: every 10 minutes

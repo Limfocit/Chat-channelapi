@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<div id="channel_api_params" style="display:none;" chat_token="{{chat_token}}" channel_id="{{channel_id}}"></div>
+	<div id="top">
+			<p>A Simple Chat using the Channel API</p>
+		<span>
+			<a href="http://www.netgamix.com">Netgamix</a>
+		</span>
+	</div>
+	
+	<div id="center">
+		{% include 'messages.html' %}
+	</div>
+	
+	<div id="bottom">
+		<span id="nick" value="{{nick}}">
+			{{nick}}
+		</span>
+		<input id="text" name="text" type="text" value=""></input>
+		<button id="send">SEND</button>
+	</div>
+	<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/simplechat.js"></script>
+{% endblock %}
