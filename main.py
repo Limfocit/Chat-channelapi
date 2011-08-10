@@ -6,6 +6,7 @@
 	License: http://netgamix.com/information/terms/
 	
 """
+from django.utils.html import strip_tags
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
@@ -78,7 +79,7 @@ class NewMessageHandler(webapp.RequestHandler):
 		text = self.request.get('text')
 		channel_id = self.request.get('channel_id')			
 		date = datetime.datetime.now()
-		message=Message(user=nick,text=text, date = date, date_string = date.strftime("%H:%M:%S"))
+		message=Message(user=nick,text=strip_tags(text), date = date, date_string = date.strftime("%H:%M:%S"))
 		message.put()
 		# Generate the template with the message
 		messages=[message]
