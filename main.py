@@ -74,10 +74,11 @@ class ChatHandler(webapp.RequestHandler):
 class NewMessageHandler(webapp.RequestHandler):
 	
 	def post(self):
-		# Get the parameters
-		nick = self.request.get('nick')
+		# Get the parameters		
 		text = self.request.get('text')
-		channel_id = self.request.get('channel_id')			
+		channel_id = self.request.get('channel_id')		
+		q = db.GqlQuery("SELECT * FROM OnlineUser WHERE channel_id = :1", channel_id)
+		nick = q.fetch(1)[0].nick	
 		date = datetime.datetime.now()
 		message=Message(user=nick,text=strip_tags(text), date = date, date_string = date.strftime("%H:%M:%S"))
 		message.put()
@@ -86,10 +87,10 @@ class NewMessageHandler(webapp.RequestHandler):
 		template_vars={'messages':messages}
 		temp = os.path.join(os.path.dirname(__file__),'templates/messages.html')
 		outstr = template.render(temp, template_vars)
+		channel_msg = json.dumps({'success':True,"html":outstr})
 		# Send the message to all the connected users
-		users = OnlineUser.all().fetch(100)
-		for user in users:			
-			channel_msg = json.dumps({'success':True,"html":outstr})
+		users = OnlineUser.all().fetch(100)		
+		for user in users:						
 			channel.send_message(user.channel_id, channel_msg)		
 
 class RegisterOpenSocketHandler(webapp.RequestHandler):	
