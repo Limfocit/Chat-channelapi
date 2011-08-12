@@ -17,7 +17,11 @@ def handle_disconnection(channel_id):
 
 class ChannelConnectHandler(webapp.RequestHandler):
     def post(self):
-        pass
+        channel_id = self.request.get('from')
+        q = OnlineUser.all().filter('channel_id =', channel_id)
+        user = q.fetch(1)[0]
+        user.opened_socket = True
+        user.put()
 
 
 class ChannelDisconnectHandler(webapp.RequestHandler):

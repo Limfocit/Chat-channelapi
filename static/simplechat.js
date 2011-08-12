@@ -30,18 +30,7 @@ $(document).ready(function(){
 	var chat_token = $('#channel_api_params').attr('chat_token');
 	var channel = new goog.appengine.Channel(chat_token);
 	var socket = channel.open();
-	socket.onopen = function(){
-		$.ajax({
-			url: '/open_socket/',
-			type: 'POST',
-			data:{
-				channel_id:$('#channel_api_params').attr('channel_id'),
-			},
-			success: function(data){
-			},
-			complete:function(){ 
-	        }			
-		});
+	socket.onopen = function(){		
 	};
 	socket.onmessage = function(m){
 		var data = $.parseJSON(m.data);
