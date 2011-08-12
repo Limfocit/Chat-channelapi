@@ -15,6 +15,7 @@ from django.utils import simplejson as json
 from google.appengine.ext import db
 from util.sessions import Session
 import os,datetime,random
+import uuid
 
 class OnlineUser(db.Model):
 	nick=db.StringProperty(default="")
@@ -57,7 +58,7 @@ class ChatHandler(webapp.RequestHandler):
 		else:
 			self.session['error']=''
 		# generate a unique id for the channel api
-		channel_id=str(random.randint(1,10000))+str(datetime.datetime.now())
+		channel_id=str(uuid.uuid4())
 		chat_token = channel.create_channel(channel_id)
 		# save the user
 		user = OnlineUser(nick=nick,channel_id=channel_id)
@@ -71,8 +72,7 @@ class ChatHandler(webapp.RequestHandler):
 		self.response.out.write(outstr)
 		
 		
-class NewMessageHandler(webapp.RequestHandler):
-	
+class NewMessageHandler(webapp.RequestHandler):	
 	def post(self):
 		# Get the parameters		
 		text = self.request.get('text')
@@ -91,15 +91,7 @@ class NewMessageHandler(webapp.RequestHandler):
 		# Send the message to all the connected users
 		users = OnlineUser.all().fetch(100)		
 		for user in users:						
-			channel.send_message(user.channel_id, channel_msg)		
-
-class RegisterOpenSocketHandler(webapp.RequestHandler):	
-	def post(self):
-		channel_id = self.request.get('channel_id')	
-		q = OnlineUser.all().filter('channel_id =', channel_id)
-		user = q.fetch(1)[0]
-		user.opened_socket = True
-		user.put()        
+			channel.send_message(user.channel_id, channel_msg)	      
 		
 class ClearDBHandler(webapp.RequestHandler):	
 	def get(self):
@@ -112,7 +104,6 @@ class ClearDBHandler(webapp.RequestHandler):
 def main():
 	application = webapp.WSGIApplication([
 		('/chat/', ChatHandler),
-		('/open_socket/', RegisterOpenSocketHandler),
 		('/clear/', ClearDBHandler),
 		('/newMessage/',NewMessageHandler),
 		('/', MainHandler)
